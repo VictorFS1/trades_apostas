@@ -1,0 +1,33 @@
+n=len(re.findall("EX=",b.texto))
+partidos=[]
+for k in range(n):
+	comienzo=b.texto.find("EX=")
+	final=b.texto.find(";",comienzo)
+	nombre=b.texto[comienzo+3:final]
+	if '-' in nombre:
+		nombre=nombre[nombre.rfind('-')+2:]
+	nombre=nombre.replace(' v ','  -  ')
+	partidos.append(nombre)
+	b.texto=b.texto[final:]
+	#print(partidos[k])
+
+# Ahora hay que buscar los ODDs de las apuestas.
+# Son de la forma: OD=1/2; 
+# Primero se encuentran los ODDs de la pimera columa
+# y luego los de la segunda
+ODDs=[]
+for k in range(2*n):
+	comienzo=b.texto.find("OD=")
+	final=b.texto.find(";",comienzo)
+	string=b.texto[comienzo+3:final]
+	# string es de la forma "11/7" hay que pasarlo a float
+	'''numerador=string[:string.find('/')]
+	denominador=string[string.find('/')+1:]
+	ODDs.append(round(1+float(int(numerador)/int(denominador)),2))'''
+	ODDs.append(Fraction(string))
+	b.texto=b.texto[final:]
+	#print(ODDs[k])
+
+# Finalmente lo guardo todo en la misma lista
+for k in range(n):
+	b.DATA.append([partidos[k],ODDs[k],ODDs[k+n]])
